@@ -39,7 +39,7 @@ class Mixin < ActiveRecord::Base
 end
 
 class ListMixin < Mixin
-  acts_as_list column: "pos", scope: :parent
+  acts_as_vm_list column: "pos", scope: :parent
 end
 
 class ListMixinSub1 < ListMixin
@@ -54,33 +54,33 @@ class ListMixinSub2 < ListMixin
 end
 
 class ListWithStringScopeMixin < Mixin
-  acts_as_list column: "pos", scope: 'parent_id = #{parent_id}'
+  acts_as_vm_list column: "pos", scope: 'parent_id = #{parent_id}'
 end
 
 class ArrayScopeListMixin < Mixin
-  acts_as_list column: "pos", scope: [:parent_id, :parent_type]
+  acts_as_vm_list column: "pos", scope: [:parent_id, :parent_type]
 end
 
 class ZeroBasedMixin < Mixin
-  acts_as_list column: "pos", top_of_list: 0, scope: [:parent_id]
+  acts_as_vm_list column: "pos", top_of_list: 0, scope: [:parent_id]
 end
 
 class DefaultScopedMixin < Mixin
-  acts_as_list column: "pos"
+  acts_as_vm_list column: "pos"
   default_scope { order('pos ASC') }
 end
 
 class DefaultScopedWhereMixin < Mixin
-  acts_as_list column: "pos"
+  acts_as_vm_list column: "pos"
   default_scope { order('pos ASC').where(active: true) }
 end
 
 class TopAdditionMixin < Mixin
-  acts_as_list column: "pos", add_new_at: :top, scope: :parent_id
+  acts_as_vm_list column: "pos", add_new_at: :top, scope: :parent_id
 end
 
 class NoAdditionMixin < Mixin
-  acts_as_list column: "pos", add_new_at: nil, scope: :parent_id
+  acts_as_vm_list column: "pos", add_new_at: nil, scope: :parent_id
 end
 
 class ActsAsListTestCase < Test::Unit::TestCase
@@ -367,7 +367,7 @@ class MultiDestroyTest < ActsAsListTestCase
   #
   #   class TodoItem < ActiveRecord::Base
   #     belongs_to :todo_list
-  #     acts_as_list scope: :todo_list
+  #     acts_as_vm_list scope: :todo_list
   #   end
   #
   # Assume that there are three items.

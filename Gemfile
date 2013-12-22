@@ -9,7 +9,7 @@ platforms :rbx do
   gem 'rubysl-test-unit'
 end
 
-# Specify your gem's dependencies in acts_as_list-rails3.gemspec
+# Specify your gem's dependencies in acts_as_vm_list-rails3.gemspec
 gemspec
 
 gem 'rake'

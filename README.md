@@ -8,11 +8,11 @@ This `acts_as` extension provides the capabilities for sorting and reordering a 
 
 In your Gemfile:
 
-    gem 'acts_as_list'
+    gem 'acts_as_vm_list'
 
 Or, from the command line:
 
-    gem install acts_as_list
+    gem install acts_as_vm_list
 
 ## Example
 
@@ -21,7 +21,7 @@ At first, you need to add a `position` column to desired table:
     rails g migration AddPositionToTodoItem position:integer
     rake db:migrate
     
-After that you can use `acts_as_list` method in the model: 
+After that you can use `acts_as_vm_list` method in the model: 
 
 ```ruby
 class TodoList < ActiveRecord::Base
@@ -30,7 +30,7 @@ end
     
 class TodoItem < ActiveRecord::Base
   belongs_to :todo_list
-  acts_as_list scope: :todo_list
+  acts_as_vm_list scope: :todo_list
 end
     
 todo_list.first.move_to_bottom
@@ -39,9 +39,9 @@ todo_list.last.move_higher
 
 ## Instance Methods Added To ActiveRecord Models
 
-You'll have a number of methods added to each instance of the ActiveRecord model that to which `acts_as_list` is added. 
+You'll have a number of methods added to each instance of the ActiveRecord model that to which `acts_as_vm_list` is added. 
 
-In `acts_as_list`, "higher" means further up the list (a lower `position`), and "lower" means further down the list (a higher `position`). That can be confusing, so it might make sense to add tests that validate that you're using the right method given your context.
+In `acts_as_vm_list`, "higher" means further up the list (a lower `position`), and "lower" means further down the list (a higher `position`). That can be confusing, so it might make sense to add tests that validate that you're using the right method given your context.
 
 ### Methods That Change Position and Reorder List
 
@@ -72,7 +72,7 @@ In `acts_as_list`, "higher" means further up the list (a lower `position`), and 
 ## Notes
 If the `position` column has a default value, then there is a slight change in behavior, i.e if you have 4 items in the list, and you insert 1, with a default position 0, it would be pushed to the bottom of the list. Please look at the tests for this and some recent pull requests for discussions related to this.
 
-All `position` queries (select, update, etc.) inside gem methods are executed without the default scope (i.e. `Model.unscoped`), this will prevent nasty issues when the default scope is different from `acts_as_list` scope.
+All `position` queries (select, update, etc.) inside gem methods are executed without the default scope (i.e. `Model.unscoped`), this will prevent nasty issues when the default scope is different from `acts_as_vm_list` scope.
 
 The `position` column is set after validations are called, so you should not put a `presence` validation on the `position` column.
 
@@ -80,17 +80,17 @@ The `position` column is set after validations are called, so you should not put
 All versions `0.1.5` onwards require Rails 3.0.x and higher.
 
 ## Build Status
-[![Build Status](https://secure.travis-ci.org/swanandp/acts_as_list.png)](https://secure.travis-ci.org/swanandp/acts_as_list)
+[![Build Status](https://secure.travis-ci.org/swanandp/acts_as_vm_list.png)](https://secure.travis-ci.org/swanandp/acts_as_vm_list)
 
 ## Workflow Status
-[![WIP Issues](https://badge.waffle.io/swanandp/acts_as_list.png)](http://waffle.io/swanandp/acts_as_list)
+[![WIP Issues](https://badge.waffle.io/swanandp/acts_as_vm_list.png)](http://waffle.io/swanandp/acts_as_vm_list)
 
 ## Roadmap
 
 1. Sort based feature
 2. Rails 4 compatibility and bye bye Rails 2! Older versions would of course continue to work with Rails 2, but there won't be any support on those.
 
-## Contributing to `acts_as_list`
+## Contributing to `acts_as_vm_list`
  
 - Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 - Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it

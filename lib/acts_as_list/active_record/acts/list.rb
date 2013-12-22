@@ -17,7 +17,7 @@ module ActiveRecord
       #
       #   class TodoItem < ActiveRecord::Base
       #     belongs_to :todo_list
-      #     acts_as_list scope: :todo_list
+      #     acts_as_vm_list scope: :todo_list
       #   end
       #
       #   todo_list.first.move_to_bottom
@@ -29,12 +29,12 @@ module ActiveRecord
         # * +scope+ - restricts what is to be considered a list. Given a symbol, it'll attach <tt>_id</tt>
         #   (if it hasn't already been added) and use that as the foreign key restriction. It's also possible
         #   to give it an entire string that is interpolated if you need a tighter scope than just a foreign key.
-        #   Example: <tt>acts_as_list scope: 'todo_list_id = #{todo_list_id} AND completed = 0'</tt>
+        #   Example: <tt>acts_as_vm_list scope: 'todo_list_id = #{todo_list_id} AND completed = 0'</tt>
         # * +top_of_list+ - defines the integer used for the top of the list. Defaults to 1. Use 0 to make the collection
         #   act more like an array in its indexing.
         # * +add_new_at+ - specifies whether objects get added to the :top or :bottom of the list. (default: +bottom+)
         #                   `nil` will result in new items not being added to the list on create
-        def acts_as_list(options = {})
+        def acts_as_vm_list(options = {})
           configuration = { column: "position", scope: "1 = 1", top_of_list: 1, add_new_at: :bottom}
           configuration.update(options) if options.is_a?(Hash)
 
@@ -79,11 +79,11 @@ module ActiveRecord
           class_eval <<-EOV
             include ::ActiveRecord::Acts::List::InstanceMethods
 
-            def acts_as_list_top
+            def acts_as_vm_list_top
               #{configuration[:top_of_list]}.to_i
             end
 
-            def acts_as_list_class
+            def acts_as_vm_list_class
               ::#{self.name}
             end
 
@@ -123,13 +123,13 @@ module ActiveRecord
         end
       end
 
-      # All the methods available to a record that has had <tt>acts_as_list</tt> specified. Each method works
+      # All the methods available to a record that has had <tt>acts_as_vm_list</tt> specified. Each method works
       # by assuming the object to be the item in the list, so <tt>chapter.move_lower</tt> would move that chapter
       # lower in the list of all chapters. Likewise, <tt>chapter.first?</tt> would return +true+ if that chapter is
       # the first in the list of all chapters.
       module InstanceMethods
         # Insert the item at the given position (defaults to the top position of 1).
-        def insert_at(position = acts_as_list_top)
+        def insert_at(position = acts_as_vm_list_top)
           insert_at_position(position)
         end
 
@@ -137,7 +137,7 @@ module ActiveRecord
         def move_lower
           return unless lower_item
 
-          acts_as_list_class.transaction do
+          acts_as_vm_list_class.transaction do
             lower_item.decrement_position
             increment_position
           end
@@ -147,7 +147,7 @@ module ActiveRecord
         def move_higher
           return unless higher_item
 
-          acts_as_list_class.transaction do
+          acts_as_vm_list_class.transaction do
             higher_item.increment_position
             decrement_position
           end
@@ -157,7 +157,7 @@ module ActiveRecord
         # position adjusted accordingly.
         def move_to_bottom
           return unless in_list?
-          acts_as_list_class.transaction do
+          acts_as_vm_list_class.transaction do
             decrement_positions_on_lower_items
             assume_bottom_position
           end
@@ -167,7 +167,7 @@ module ActiveRecord
         # position adjusted accordingly.
         def move_to_top
           return unless in_list?
-          acts_as_list_class.transaction do
+          acts_as_vm_list_class.transaction do
             increment_positions_on_higher_items
             assume_top_position
           end
@@ -202,7 +202,7 @@ module ActiveRecord
         # Return +true+ if this object is the first in the list.
         def first?
           return false unless in_list?
-          self.send(position_column) == acts_as_list_top
+          self.send(position_column) == acts_as_vm_list_top
         end
 
         # Return +true+ if this object is the last in the list.
@@ -214,41 +214,41 @@ module ActiveRecord
         # Return the next higher item in the list.
         def higher_item
           return nil unless in_list?
-          acts_as_list_class.unscoped.
+          acts_as_vm_list_class.unscoped.
             where("#{scope_condition} AND #{position_column} < #{(send(position_column).to_i).to_s}").
-            order("#{acts_as_list_class.table_name}.#{position_column} DESC").first
+            order("#{acts_as_vm_list_class.table_name}.#{position_column} DESC").first
         end
 
         # Return the next n higher items in the list
         # selects all higher items by default
         def higher_items(limit=nil)
-          limit ||= acts_as_list_list.count
+          limit ||= acts_as_vm_list_list.count
           position_value = send(position_column)
-          acts_as_list_list.
+          acts_as_vm_list_list.
             where("#{position_column} < ?", position_value).
             where("#{position_column} >= ?", position_value - limit).
             limit(limit).
-            order("#{acts_as_list_class.table_name}.#{position_column} ASC")
+            order("#{acts_as_vm_list_class.table_name}.#{position_column} ASC")
         end
 
         # Return the next lower item in the list.
         def lower_item
           return nil unless in_list?
-          acts_as_list_class.unscoped.
+          acts_as_vm_list_class.unscoped.
             where("#{scope_condition} AND #{position_column} > #{(send(position_column).to_i).to_s}").
-            order("#{acts_as_list_class.table_name}.#{position_column} ASC").first
+            order("#{acts_as_vm_list_class.table_name}.#{position_column} ASC").first
         end
 
         # Return the next n lower items in the list
         # selects all lower items by default
         def lower_items(limit=nil)
-          limit ||= acts_as_list_list.count
+          limit ||= acts_as_vm_list_list.count
           position_value = send(position_column)
-          acts_as_list_list.
+          acts_as_vm_list_list.
             where("#{position_column} > ?", position_value).
             where("#{position_column} <= ?", position_value + limit).
             limit(limit).
-            order("#{acts_as_list_class.table_name}.#{position_column} ASC")
+            order("#{acts_as_vm_list_class.table_name}.#{position_column} ASC")
         end
 
         # Test if this record is in a list
@@ -261,7 +261,7 @@ module ActiveRecord
         end
 
         def default_position
-          acts_as_list_class.columns_hash[position_column.to_s].default
+          acts_as_vm_list_class.columns_hash[position_column.to_s].default
         end
 
         def default_position?
@@ -275,14 +275,14 @@ module ActiveRecord
         end
 
         private
-          def acts_as_list_list
-            acts_as_list_class.unscoped.
+          def acts_as_vm_list_list
+            acts_as_vm_list_class.unscoped.
               where(scope_condition)
           end
 
           def add_to_list_top
             increment_positions_on_all_items
-            self[position_column] = acts_as_list_top
+            self[position_column] = acts_as_vm_list_top
           end
 
           def add_to_list_bottom
@@ -300,14 +300,14 @@ module ActiveRecord
           #   bottom_position_in_list    # => 2
           def bottom_position_in_list(except = nil)
             item = bottom_item(except)
-            item ? item.send(position_column) : acts_as_list_top - 1
+            item ? item.send(position_column) : acts_as_vm_list_top - 1
           end
 
           # Returns the bottom item
           def bottom_item(except = nil)
             conditions = scope_condition
             conditions = "#{conditions} AND #{self.class.primary_key} != '#{except.id}'" if except
-            acts_as_list_class.unscoped.in_list.where(conditions).order("#{acts_as_list_class.table_name}.#{position_column} DESC").first
+            acts_as_vm_list_class.unscoped.in_list.where(conditions).order("#{acts_as_vm_list_class.table_name}.#{position_column} DESC").first
           end
 
           # Forces item to assume the bottom position in the list.
@@ -317,12 +317,12 @@ module ActiveRecord
 
           # Forces item to assume the top position in the list.
           def assume_top_position
-            set_list_position(acts_as_list_top)
+            set_list_position(acts_as_vm_list_top)
           end
 
           # This has the effect of moving all the higher items up one.
           def decrement_positions_on_higher_items(position)
-            acts_as_list_class.unscoped.where(
+            acts_as_vm_list_class.unscoped.where(
               "#{scope_condition} AND #{position_column} <= #{position}"
             ).update_all(
               "#{position_column} = (#{position_column} - 1)"
@@ -333,7 +333,7 @@ module ActiveRecord
           def decrement_positions_on_lower_items(position=nil)
             return unless in_list?
             position ||= send(position_column).to_i
-            acts_as_list_class.unscoped.where(
+            acts_as_vm_list_class.unscoped.where(
               "#{scope_condition} AND #{position_column} > #{position}"
             ).update_all(
               "#{position_column} = (#{position_column} - 1)"
@@ -343,7 +343,7 @@ module ActiveRecord
           # This has the effect of moving all the higher items down one.
           def increment_positions_on_higher_items
             return unless in_list?
-            acts_as_list_class.unscoped.where(
+            acts_as_vm_list_class.unscoped.where(
               "#{scope_condition} AND #{position_column} < #{send(position_column).to_i}"
             ).update_all(
               "#{position_column} = (#{position_column} + 1)"
@@ -352,7 +352,7 @@ module ActiveRecord
 
           # This has the effect of moving all the lower items down one.
           def increment_positions_on_lower_items(position)
-            acts_as_list_class.unscoped.where(
+            acts_as_vm_list_class.unscoped.where(
               "#{scope_condition} AND #{position_column} >= #{position}"
             ).update_all(
               "#{position_column} = (#{position_column} + 1)"
@@ -361,7 +361,7 @@ module ActiveRecord
 
           # Increments position (<tt>position_column</tt>) of all items in the list.
           def increment_positions_on_all_items
-            acts_as_list_class.unscoped.where(
+            acts_as_vm_list_class.unscoped.where(
               "#{scope_condition}"
             ).update_all(
               "#{position_column} = (#{position_column} + 1)"
@@ -377,7 +377,7 @@ module ActiveRecord
               #
               # e.g., if moving an item from 2 to 5,
               # move [3, 4, 5] to [2, 3, 4]
-              acts_as_list_class.unscoped.where(
+              acts_as_vm_list_class.unscoped.where(
                 "#{scope_condition} AND #{position_column} > #{old_position} AND #{position_column} <= #{new_position}#{avoid_id_condition}"
               ).update_all(
                 "#{position_column} = (#{position_column} - 1)"
@@ -387,7 +387,7 @@ module ActiveRecord
               #
               # e.g., if moving an item from 5 to 2,
               # move [2, 3, 4] to [3, 4, 5]
-              acts_as_list_class.unscoped.where(
+              acts_as_vm_list_class.unscoped.where(
                 "#{scope_condition} AND #{position_column} >= #{new_position} AND #{position_column} < #{old_position}#{avoid_id_condition}"
               ).update_all(
                 "#{position_column} = (#{position_column} + 1)"
@@ -419,7 +419,7 @@ module ActiveRecord
             old_position = send("#{position_column}_was").to_i
             new_position = send(position_column).to_i
 
-            return unless acts_as_list_class.unscoped.where("#{scope_condition} AND #{position_column} = #{new_position}").count > 1
+            return unless acts_as_vm_list_class.unscoped.where("#{scope_condition} AND #{position_column} = #{new_position}").count > 1
             shuffle_positions_on_intermediate_items old_position, new_position, id
           end
 
