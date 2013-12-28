@@ -83,7 +83,7 @@ class NoAdditionMixin < Mixin
   acts_as_vm_list column: "pos", add_new_at: nil, scope: :parent_id
 end
 
-class ActsAsListTestCase < Test::Unit::TestCase
+class ActsAsVmListTestCase < Test::Unit::TestCase
   # No default test required a this class is abstract.
   # Need for test/unit.
   undef_method :default_test if method_defined?(:default_test)
@@ -93,7 +93,7 @@ class ActsAsListTestCase < Test::Unit::TestCase
   end
 end
 
-class ZeroBasedTest < ActsAsListTestCase
+class ZeroBasedTest < ActsAsVmListTestCase
   include Shared::ZeroBased
 
   def setup
@@ -102,7 +102,7 @@ class ZeroBasedTest < ActsAsListTestCase
   end
 end
 
-class ZeroBasedTestWithDefault < ActsAsListTestCase
+class ZeroBasedTestWithDefault < ActsAsVmListTestCase
   include Shared::ZeroBased
 
   def setup
@@ -111,7 +111,7 @@ class ZeroBasedTestWithDefault < ActsAsListTestCase
   end
 end
 
-class ListTest < ActsAsListTestCase
+class ListTest < ActsAsVmListTestCase
   include Shared::List
 
   def setup
@@ -120,7 +120,7 @@ class ListTest < ActsAsListTestCase
   end
 end
 
-class ListTestWithDefault < ActsAsListTestCase
+class ListTestWithDefault < ActsAsVmListTestCase
   include Shared::List
 
   def setup
@@ -129,7 +129,7 @@ class ListTestWithDefault < ActsAsListTestCase
   end
 end
 
-class ListSubTest < ActsAsListTestCase
+class ListSubTest < ActsAsVmListTestCase
   include Shared::ListSub
 
   def setup
@@ -138,7 +138,7 @@ class ListSubTest < ActsAsListTestCase
   end
 end
 
-class ListSubTestWithDefault < ActsAsListTestCase
+class ListSubTestWithDefault < ActsAsVmListTestCase
   include Shared::ListSub
 
   def setup
@@ -147,7 +147,7 @@ class ListSubTestWithDefault < ActsAsListTestCase
   end
 end
 
-class ArrayScopeListTest < ActsAsListTestCase
+class ArrayScopeListTest < ActsAsVmListTestCase
   include Shared::ArrayScopeList
 
   def setup
@@ -156,7 +156,7 @@ class ArrayScopeListTest < ActsAsListTestCase
   end
 end
 
-class ArrayScopeListTestWithDefault < ActsAsListTestCase
+class ArrayScopeListTestWithDefault < ActsAsVmListTestCase
   include Shared::ArrayScopeList
 
   def setup
@@ -165,7 +165,7 @@ class ArrayScopeListTestWithDefault < ActsAsListTestCase
   end
 end
 
-class DefaultScopedTest < ActsAsListTestCase
+class DefaultScopedTest < ActsAsVmListTestCase
   def setup
     setup_db
     (1..4).each { |counter| DefaultScopedMixin.create!({pos: counter}) }
@@ -258,7 +258,7 @@ class DefaultScopedTest < ActsAsListTestCase
   end
 end
 
-class DefaultScopedWhereTest < ActsAsListTestCase
+class DefaultScopedWhereTest < ActsAsVmListTestCase
   def setup
     setup_db
     (1..4).each { |counter| DefaultScopedWhereMixin.create! pos: counter, active: false }
@@ -352,7 +352,7 @@ class DefaultScopedWhereTest < ActsAsListTestCase
 
 end
 
-class MultiDestroyTest < ActsAsListTestCase
+class MultiDestroyTest < ActsAsVmListTestCase
 
   def setup
     setup_db
@@ -399,7 +399,7 @@ end
 
 #class TopAdditionMixin < Mixin
 
-class TopAdditionTest < ActsAsListTestCase
+class TopAdditionTest < ActsAsVmListTestCase
   include Shared::TopAddition
 
   def setup
@@ -408,7 +408,7 @@ class TopAdditionTest < ActsAsListTestCase
   end
 end
 
-class TopAdditionTestWithDefault < ActsAsListTestCase
+class TopAdditionTestWithDefault < ActsAsVmListTestCase
   include Shared::TopAddition
 
   def setup
@@ -417,7 +417,7 @@ class TopAdditionTestWithDefault < ActsAsListTestCase
   end
 end
 
-class NoAdditionTest < ActsAsListTestCase
+class NoAdditionTest < ActsAsVmListTestCase
   include Shared::NoAddition
 
   def setup
@@ -426,7 +426,7 @@ class NoAdditionTest < ActsAsListTestCase
   end
 end
 
-class MultipleListsTest < ActsAsListTestCase
+class MultipleListsTest < ActsAsVmListTestCase
   def setup
     setup_db
     (1..4).each { |counter| ListMixin.create! :pos => counter, :parent_id => 1}
@@ -450,7 +450,7 @@ class MultipleListsTest < ActsAsListTestCase
   end
 end
 
-class MultipleListsArrayScopeTest < ActsAsListTestCase
+class MultipleListsArrayScopeTest < ActsAsVmListTestCase
   def setup
     setup_db
     (1..4).each { |counter| ArrayScopeListMixin.create! :pos => counter,:parent_id => 1, :parent_type => 'anything'}

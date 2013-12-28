@@ -1,4 +1,4 @@
-# ActsAsList
+# ActsAsVmList
 
 ## Description
 

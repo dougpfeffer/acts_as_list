@@ -1,12 +1,12 @@
 require 'acts_as_vm_list/active_record/acts/list'
 
-module ActsAsList
+module ActsAsVmList
   if defined? Rails::Railtie
     require 'rails'
     class Railtie < Rails::Railtie
       initializer 'acts_as_vm_list.insert_into_active_record' do
         ActiveSupport.on_load :active_record do
-          ActsAsList::Railtie.insert
+          ActsAsVmList::Railtie.insert
         end
       end
     end
@@ -21,4 +21,4 @@ module ActsAsList
   end
 end
 
-ActsAsList::Railtie.insert
+ActsAsVmList::Railtie.insert
