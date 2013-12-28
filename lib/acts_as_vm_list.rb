@@ -1,4 +1,4 @@
-require 'acts_as_vm_list/active_record/acts/list'
+require 'acts_as_vm_list/active_record/acts/vm_list'
 
 module ActsAsVmList
   if defined? Rails::Railtie
