@@ -77,7 +77,7 @@ module ActiveRecord
           end
 
           class_eval <<-EOV
-            include ::ActiveRecord::Acts::List::InstanceMethods
+            include ::ActiveRecord::Acts::VmList::InstanceMethods
 
             def acts_as_vm_list_top
               #{configuration[:top_of_list]}.to_i

@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   # Description Meta...
   s.name        = 'acts_as_vm_list'
-  s.version     = ActiveRecord::Acts::List::VERSION
+  s.version     = ActiveRecord::Acts::VmList::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['David Heinemeier Hansson', 'Swanand Pagnis', 'Quinn Chaffee']
   s.email       = ['swanand.pagnis@gmail.com']

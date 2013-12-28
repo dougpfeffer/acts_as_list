@@ -20,7 +20,7 @@ begin
   require 'rdoc/task'
   RDoc::Task.new do |rdoc|
     require "acts_as_vm_list/version"
-    version = ActiveRecord::Acts::List::VERSION
+    version = ActiveRecord::Acts::VmList::VERSION
 
     rdoc.rdoc_dir = 'rdoc'
     rdoc.title = "acts_as_vm_list-rails3 #{version}"

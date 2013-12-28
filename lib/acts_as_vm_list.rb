@@ -15,7 +15,7 @@ module ActsAsVmList
   class Railtie
     def self.insert
       if defined?(ActiveRecord)
-        ActiveRecord::Base.send(:include, ActiveRecord::Acts::List)
+        ActiveRecord::Base.send(:include, ActiveRecord::Acts::VmList)
       end
     end
   end
