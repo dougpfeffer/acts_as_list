@@ -1,6 +1,6 @@
 module ActiveRecord
   module Acts #:nodoc:
-    module List #:nodoc:
+    module VmList #:nodoc:
       def self.included(base)
         base.extend(ClassMethods)
       end
