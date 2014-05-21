@@ -325,7 +325,7 @@ module ActiveRecord
             acts_as_vm_list_class.unscoped.where(
               "#{scope_condition} AND #{position_column} <= #{position}"
             ).update_all(
-              "#{position_column} = (#{position_column} - 1)"
+              "#{position_column} = (#{position_column} - 1) #{additional_updates}"
             )
           end
 
@@ -336,7 +336,7 @@ module ActiveRecord
             acts_as_vm_list_class.unscoped.where(
               "#{scope_condition} AND #{position_column} > #{position}"
             ).update_all(
-              "#{position_column} = (#{position_column} - 1)"
+              "#{position_column} = (#{position_column} - 1) #{additional_updates}"
             )
           end
 
@@ -346,7 +346,7 @@ module ActiveRecord
             acts_as_vm_list_class.unscoped.where(
               "#{scope_condition} AND #{position_column} < #{send(position_column).to_i}"
             ).update_all(
-              "#{position_column} = (#{position_column} + 1)"
+              "#{position_column} = (#{position_column} + 1) #{additional_updates}"
             )
           end
 
@@ -355,7 +355,7 @@ module ActiveRecord
             acts_as_vm_list_class.unscoped.where(
               "#{scope_condition} AND #{position_column} >= #{position}"
             ).update_all(
-              "#{position_column} = (#{position_column} + 1)"
+              "#{position_column} = (#{position_column} + 1) #{additional_updates}"
             )
           end
 
@@ -364,14 +364,24 @@ module ActiveRecord
             acts_as_vm_list_class.unscoped.where(
               "#{scope_condition}"
             ).update_all(
-              "#{position_column} = (#{position_column} + 1)"
+              "#{position_column} = (#{position_column} + 1) #{additional_updates}"
             )
+          end
+
+          def additional_updates 
+            if self.has_attribute? self.class.locking_column
+              return ", #{self.class.locking_column} = (#{self.class.locking_column} + 1)"
+            else
+              return "" 
+            end
           end
 
           # Reorders intermediate items to support moving an item from old_position to new_position.
           def shuffle_positions_on_intermediate_items(old_position, new_position, avoid_id = nil)
             return if old_position == new_position
             avoid_id_condition = avoid_id ? " AND #{self.class.primary_key} != '#{avoid_id}'" : ''
+            
+
             if old_position < new_position
               # Decrement position of intermediate items
               #
@@ -380,7 +390,7 @@ module ActiveRecord
               acts_as_vm_list_class.unscoped.where(
                 "#{scope_condition} AND #{position_column} > #{old_position} AND #{position_column} <= #{new_position}#{avoid_id_condition}"
               ).update_all(
-                "#{position_column} = (#{position_column} - 1)"
+                "#{position_column} = (#{position_column} - 1) #{additional_updates}"
               )
             else
               # Increment position of intermediate items
@@ -390,7 +400,7 @@ module ActiveRecord
               acts_as_vm_list_class.unscoped.where(
                 "#{scope_condition} AND #{position_column} >= #{new_position} AND #{position_column} < #{old_position}#{avoid_id_condition}"
               ).update_all(
-                "#{position_column} = (#{position_column} + 1)"
+                "#{position_column} = (#{position_column} + 1) #{additional_updates}"
               )
             end
           end
